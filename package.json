@@ -1,0 +1,9 @@
+{
+	"name": "tianhao-server",
+	"version": "1.0.0",
+	"main": "app.js",
+	"license": "MIT",
+	"dependencies": {
+		"mongoose": "^5.8.4"
+	}
+}
