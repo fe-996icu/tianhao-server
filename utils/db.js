@@ -13,7 +13,7 @@ const schemas = require('../schemas/index.js');
 let dbName = null;
 let url = 'mongodb://localhost:27017';
 
-mongoose.set('useCreateIndex', true);
+// mongoose.set('useCreateIndex', true);
 
 class Mongo{
 	static getInstance(db){
@@ -53,6 +53,107 @@ class Mongo{
 				});
 			}else{
 				resolve(_that.client);
+			}
+		});
+	}
+
+	insert(table, obj, canRepeat){
+		return new Promise((resolve, reject)=>{
+			try{
+				const flag = canRepeat === undefined ? true : canRepeat;
+				this.connect().then(()=>{
+					flag ? new schema[table](obj).save(err=>{
+						if(err){
+							reject(err);
+						}else{
+							resolve({
+								status: 1,
+							});
+						}
+					}) :
+					this.findInTable(table, obj).then(res=>{
+						if(res.length > 0){
+							resolve({
+								status: 0,
+							});
+						}
+
+						new schema[table](obj).save(err=>{
+							if(err){
+								reject(err);
+							}else{
+								resolve({
+									status: 1,
+								});
+							}
+						})
+					});;
+				});
+			}catch(ex){
+				reject(ex);
+			}
+		});
+	}
+
+	findInTable(table, obj={}){
+		return new Promise((resolve, reject)=>{
+			try {
+				this.connect().then(()=>{
+					schema[table].find(obj, (err, doc)=>{
+						if(err){
+							reject(err);
+						}else{
+							resolve({
+								length: doc.length,
+								data: doc,
+							});
+						}
+					});
+				});
+			}catch(ex){
+				throw new Error(ex);
+			}
+		});
+	}
+
+	delete(table, obj){
+		return new Promise((resolve, reject)=>{
+			try{
+				this.connect().then(()=>{
+					schema[table].deleteMany(obj, err=>{
+						if(err){
+							reject(err);
+						}else{
+							resolve({
+								status: 1,
+							});
+						}
+					});
+				});
+			}catch(ex){
+				throw new Error(ex);
+			}
+		});
+	}
+
+	updateData(table, old, now){
+		return new Promise((resolve, reject)=>{
+			try{
+				this.connect().then(()=>{
+					schema[table].updateMany(old, {
+						$set: now,
+					}, (err)=>{
+						if(err){
+							reject(err);
+						}else{
+							resolve({
+								status: 1,
+							});
+						}
+					});
+				});
+			}catch(ex){
+				throw ex;
 			}
 		});
 	}
