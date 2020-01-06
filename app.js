@@ -1,53 +1,40 @@
-// const db = require('./utils/db-helper.js');
+const Koa = require('koa');
+const bodyParser = require('koa-bodyparser');
+const responseFormat = require('./middlewares/responseFormat.js');
+const router = require('./controllers');
+const { SERVER_PORT } = require('./config/global.js');
 
-// db.connect().then((db2)=>{
-// 	console.log(db2, 888);
-// });
+// 记录服务启动时间
+const serverStartTime = Date.now();
 
-// db.find('user', {}).then((list)=>{
-// 	console.log(list, 444);
-// });
+const app = new Koa();
 
-// db.findOne('user').then(v=>console.log('findOne', v));
+app.use(async (ctx, next)=>{
+	console.log(`请求已接受：${ ctx.url }`);
+	await next();
+});
 
-// db.exist('user', {
-// 	username: 'admin',
-// 	password: 'admin2',
-// }).then(exist=>{
-// 	console.log('是否存在：', exist);
-// });
+// 处理post请求主体参数解析
+app.use(bodyParser());
 
-// db.findById('user', '5e0f1e14426c2cbd3132fb11').then(v=>{
-// 	console.log(v);
-// });
+app.use(responseFormat());
 
-// db.insert('user', {
-// 	username: 'admin2',
-// 	password: 'admin2',
-// 	realname: 'abc',
-// }).then(v=>{
-// 	console.log(v);
-// });
+// 处理路由
+app.use(router.routes());
+app.use(router.allowedMethods());
 
-// db.insertMany('user', [
-// 	{
-// 		username: 1,
-// 		password: 2,
-// 		realname: 3,
-// 	},{
-// 		username: 1,
-// 		password: 2,
-// 		realname: 3,
-// 	},
-// ]).then(v=>console.log(v, 33));
+app.use(async (ctx, next)=>{
+	console.log(`请求处理完成：${ ctx.url }`);
+});
 
-// const db2 = require('./utils/db.js');
+app.listen(SERVER_PORT, function(err){
+	if(err){
+		return console.error(err);
+	}
 
-// db2.getInstance().insert('uuser', {
-// 	name: 123,
-// 	age: 234,
-// });
+	// 服务启动结束时间
+	const serverEndTime = Date.now();
 
-// console.log(db,888);
-
-require('./controllers/user.js');
+	console.log(`服务启动成功，耗时：${ serverEndTime - serverStartTime }ms`);
+	console.log(`访问地址： http://localhost:${ SERVER_PORT }/`);
+});
