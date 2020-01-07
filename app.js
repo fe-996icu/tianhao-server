@@ -1,32 +1,43 @@
-const Koa = require('koa');
-const bodyParser = require('koa-bodyparser');
-const responseFormat = require('./middlewares/responseFormat.js');
-const router = require('./controllers');
-const { SERVER_PORT } = require('./config/global.js');
+/*服务器入口
+ * @Author: zzh0211@live.com
+ * @Date: 2020-01-07 20:03:32
+ * @Last Modified by:   zzh0211@live.com
+ * @Last Modified time: 2020-01-07 20:03:32
+ */
 
-// 记录服务启动时间
+// 记录服务启动时长
 const serverStartTime = Date.now();
 
+// 模块别名注册
+require('module-alias/register');
+const Koa = require('koa');
+const bodyParser = require('koa-bodyparser');
+// 响应内容包装格式化
+const responseFormat = require('./middlewares/response-format.js');
+// 请求处理时间计算
+const requestDisposeTime = require('./middlewares/request-dispose-time.js');
+// 路由控制器
+const router = require('./controllers');
+// 服务配置
+const { SERVER_PORT } = require('./config/server.js');
+
+
+// 实例化koa
 const app = new Koa();
 
-app.use(async (ctx, next)=>{
-	console.log(`请求已接受：${ ctx.url }`);
-	await next();
-});
 
+// 记录请求处理时间
+app.use(requestDisposeTime);
 // 处理post请求主体参数解析
 app.use(bodyParser());
-
+// 响应内容包装格式化
 app.use(responseFormat());
-
 // 处理路由
 app.use(router.routes());
 app.use(router.allowedMethods());
 
-app.use(async (ctx, next)=>{
-	console.log(`请求处理完成：${ ctx.url }`);
-});
 
+// 启动服务
 app.listen(SERVER_PORT, function(err){
 	if(err){
 		return console.error(err);
