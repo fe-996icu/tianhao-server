@@ -4,36 +4,35 @@ const schema = require('../rule-schemas/user/login.js');
 const router = new Router();
 /**逻辑状态码策略 */
 const CODE_STRATEGY = require('../config/logic-code-strategy.js');
+// 通用校验函数选项
+const { common_validate_options } = require('../config/joi.js');
 
-// const schema = Joi.object({
-// 	username: Joi.string().alphanum().min(3).max(30).required(),
-// 	password: Joi.string().pattern(/^[a-zA-Z0-9]{3,30}$/),
+// router.get('/', async (ctx, next)=>{
+// 	await next();
+
+// 	ctx.body = JSON.stringify({
+// 		a:1,
+// 		b:2,
+// 	});
+
+// 	ctx.type = 'application/json';
 // });
-
-
-
-router.get('/', async (ctx, next)=>{
-	await next();
-
-	ctx.body = JSON.stringify({
-		a:1,
-		b:2,
-	});
-
-	ctx.type = 'application/json';
-});
 
 router.post('/login', async (ctx, next)=>{
 	const {
 		request: {
 			body,
-			body: { username, password, captcha, },
+			body: {
+				username,
+				password,
+				captcha,
+			},
 		}
 	} = ctx;
 
 	await next();
 
-	const ret = schema.validate(body);
+	const ret = schema.validate(body, common_validate_options);
 
 	if(ret.error){
 		console.error(`校验不通过： ${ ret.error.details[0].type }`);

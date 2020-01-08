@@ -7,7 +7,7 @@
 		"start": "node app.js"
 	},
 	"_moduleAliases": {
-		"@": "."
+		"@": "./src/"
 	},
 	"dependencies": {
 		"@hapi/joi": "^17.0.0",

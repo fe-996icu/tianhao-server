@@ -1,8 +1,8 @@
 /*服务器入口
  * @Author: zzh0211@live.com
  * @Date: 2020-01-07 20:03:32
- * @Last Modified by:   zzh0211@live.com
- * @Last Modified time: 2020-01-07 20:03:32
+ * @Last Modified by: zzh0211@live.com
+ * @Last Modified time: 2020-01-08 14:21:53
  */
 
 // 记录服务启动时长
@@ -13,13 +13,13 @@ require('module-alias/register');
 const Koa = require('koa');
 const bodyParser = require('koa-bodyparser');
 // 响应内容包装格式化
-const responseFormat = require('./middlewares/response-format.js');
+const responseFormat = require('@/middlewares/response-format.js');
 // 请求处理时间计算
-const requestDisposeTime = require('./middlewares/request-dispose-time.js');
+const requestDisposeTime = require('@/middlewares/request-dispose-time.js');
 // 路由控制器
-const router = require('./controllers');
+const router = require('@/controllers');
 // 服务配置
-const { SERVER_PORT } = require('./config/server.js');
+const { SERVER_PORT } = require('@/config/server.js');
 
 
 // 实例化koa
