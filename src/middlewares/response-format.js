@@ -8,7 +8,7 @@ const _ = require('lodash');
 
 function responseFormat({ successCode=200, successMsg='ok', type='json', }={}){
 	return async function(ctx, next){
-		ctx.success = function(data){
+		ctx.$success = function(data){
 			ctx.type = type;
 			ctx.body = {
 				code: successCode,
@@ -17,8 +17,8 @@ function responseFormat({ successCode=200, successMsg='ok', type='json', }={}){
 			};
 		};
 
-		ctx.fail = function(strategy){
-			const [msg='未知错误', code=400] = _.isString(strategy) ? { msg: strategy }: strategy;
+		ctx.$fail = function(strategy){
+			const [code=400, msg='未知错误'] = _.isString(strategy) ? [undefined, strategy] : strategy;
 
 			ctx.type = type;
 			ctx.body = {
