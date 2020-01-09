@@ -2,7 +2,7 @@
  * @Author: zzh0211@live.com
  * @Date: 2020-01-07 20:06:29
  * @Last Modified by: zzh0211@live.com
- * @Last Modified time: 2020-01-07 20:48:14
+ * @Last Modified time: 2020-01-08 21:01:33
  */
 const _ = require('lodash');
 
@@ -28,7 +28,7 @@ function responseFormat({ successCode=200, successMsg='ok', type='json', }={}){
 			};
 		};
 
-		next();
+		await next();
 	}
 };
 

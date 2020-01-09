@@ -1,4 +1,3 @@
 module.exports = {
-	LOGIN_DATA_EMPTY: [1000, '账号和密码不能为空'],
-	LOGIN_DATA_MISS: [1001, '账号或密码错误'],
+	LOGIN_DATA_INVALID: [1000, '账号或密码错误'],
 };

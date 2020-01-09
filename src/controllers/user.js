@@ -1,3 +1,9 @@
+/*用户模块相关的controller
+ * @Author: zzh0211@live.com
+ * @Date: 2020-01-08 20:41:33
+ * @Last Modified by: zzh0211@live.com
+ * @Last Modified time: 2020-01-08 20:42:32
+ */
 
 const Router = require('koa-router');
 const schema = require('../rule-schemas/user/login.js');
@@ -7,16 +13,19 @@ const CODE_STRATEGY = require('../config/logic-code-strategy.js');
 // 通用校验函数选项
 const { common_validate_options } = require('../config/joi.js');
 
-// router.get('/', async (ctx, next)=>{
-// 	await next();
+const userService = require('../services/user.js');
 
-// 	ctx.body = JSON.stringify({
-// 		a:1,
-// 		b:2,
-// 	});
+// 获取验证码
+router.get('/ge_get_captcha', async (ctx, next)=>{
+	await next();
 
-// 	ctx.type = 'application/json';
-// });
+	ctx.body = JSON.stringify({
+		a:1,
+		b:2,
+	});
+
+	ctx.type = 'application/json';
+});
 
 router.post('/login', async (ctx, next)=>{
 	const {
@@ -30,35 +39,26 @@ router.post('/login', async (ctx, next)=>{
 		}
 	} = ctx;
 
+	// 校验请求提交的数据
+	const { error } = schema.validate(body, common_validate_options);
+	if(error){
+		const { message, details, } = error;
+		console.error(`校验不通过： ${ details[0].type }【${ message }】`);
+		return ctx.fail([message]);
+	}
+
+	const ret = await userService.login(username, password);
+
+	if(ret){
+		ctx.success({
+			ret
+		});
+	}else{
+		// 账号密码查不到
+		ctx.fail(CODE_STRATEGY.LOGIN_DATA_INVALID);
+	}
+
 	await next();
-
-	const ret = schema.validate(body, common_validate_options);
-
-	if(ret.error){
-		console.error(`校验不通过： ${ ret.error.details[0].type }`);
-		return ctx.fail([ret.error.message]);
-	}
-
-	debugger
-
-	// 验证提交数据
-	// if(_.isEmpty(username)){
-	// 	// return ctx.status = 405;
-	// }
-
-	// if(){}
-
-	if(ctx.request.body.username !== 'admin'){
-		ctx.fail(CODE_STRATEGY.LOGIN_DATA_MISS);
-		return;
-	}
-
-
-
-	ctx.success({
-		a:1,
-		b:2,
-	});
 });
 
 module.exports = router;
