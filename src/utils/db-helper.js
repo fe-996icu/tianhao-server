@@ -47,6 +47,8 @@ class Mongo{
 				return resolve(this._client);
 			}
 
+			const beginTime = Date.now();
+
 			// 连接数据库
 			mongoose.connect(this.connectString,  connectConfig);
 
@@ -57,7 +59,9 @@ class Mongo{
 					return reject(err);
 				}
 
-				console.log('数据库连接成功...');
+				const connectTime = Date.now() - beginTime;
+
+				console.log(`数据库连接成功，耗时：${ connectTime }ms`);
 
 				return resolve(this._client);
 			});
