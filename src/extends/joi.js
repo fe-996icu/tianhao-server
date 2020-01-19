@@ -2,7 +2,7 @@
  * @Author: zzh0211@live.com
  * @Date: 2020-01-07 20:07:50
  * @Last Modified by: zzh0211@live.com
- * @Last Modified time: 2020-01-08 18:20:38
+ * @Last Modified time: 2020-01-19 14:43:52
  */
 const Joi = require('@hapi/joi');
 
@@ -13,6 +13,8 @@ const customJoi = Joi.extend((joi) => {
         base: joi.string(),
         messages: {
 			'any.required': '{{#label}}是必填项',
+			// 'any.only': '{{#label}}必须是其中一个',
+			'any.only': '{{#label}}必须是{if(#valids.length == 1, "", "它们中的一个：")}{{#valids}}',
 			'string.empty': '{#label}不能为空',
 			'string.base': '{{#label}}必须是字符串',
 			'string.pattern.base': '{{#label}}格式不正确',
