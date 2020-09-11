@@ -5,6 +5,7 @@
  * @Last Modified time: 2020-01-19 15:45:43
  */
 const { common_validate_options } = require('../config/joi.js');
+const svgCaptcha = require('svg-captcha');
 
 /**
  * 验证joi校验模式
@@ -24,6 +25,30 @@ function validateSchema({ schema, data, context }){
 	}
 }
 
+
+/**生成svg验证码 */
+function getCaptcha(){
+	// 创建svg验证码
+	const c = svgCaptcha.createMathExpr({
+		size: 4,
+		ignoreChars: '0o1i',
+		noise: 3,
+		// background: '#cc9966',
+		background: '#fff',
+		width: 120,
+		height: 32,
+	});
+
+	console.log(`验证码：【${ c.text }】`);
+
+	return {
+		text: c.text,
+		data: c.data,
+		...c,
+	};
+}
+
 module.exports = {
 	validateSchema,
+	getCaptcha,
 };
