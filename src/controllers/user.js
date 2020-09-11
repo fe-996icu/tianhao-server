@@ -6,7 +6,6 @@
  */
 
 const Router = require('koa-router');
-const svgCaptcha = require('svg-captcha');
 const loginSchema = require('../rule-schemas/user/login.js');
 const captchaSchema = require('../rule-schemas/system/captcha.js');
 const router = new Router();
@@ -15,6 +14,17 @@ const CODE_STRATEGY = require('../config/logic-code-strategy.js');
 const utils = require('../utils/index.js');
 
 const userService = require('../services/user.js');
+
+/**初始化验证码，会将验证码的值存储到session中 */
+function _initCaptcha(context, captchaType){
+	// 创建svg验证码
+	const { text, data, } = utils.getCaptcha();
+
+	// 清除session中的登录验证码，必须重新调验证码重新获取
+	context.session[`captcha_${ captchaType }`] = text;
+
+	return data;
+}
 
 // 获取验证码
 router.get('/ge_get_captcha', async (ctx, next)=>{
@@ -33,41 +43,22 @@ router.get('/ge_get_captcha', async (ctx, next)=>{
 		return;
 	}
 
-	const {
-		captcha_type,
-	} = query;
+	const { captcha_type, } = query;
 
 	// 创建svg验证码
-	const c = svgCaptcha.createMathExpr({
-		size: 4,
-		ignoreChars: '0o1i',
-		noise: 3,
-		// background: '#cc9966',
-		background: '#fff',
-		width: 120,
-		height: 32,
-	});
-
-	console.log(`验证码【${ captcha_type }】：${ c.text }`);
+	const svgData = _initCaptcha(ctx, captcha_type);
 
 	// 返回svg路径
 	ctx.$success({
-		data: c.data
+		data: svgData,
 	});
-
-	// 将结果存在session
-	ctx.session[`captcha_${ captcha_type }`] = c.text;
 
 	await next();
 });
 
 // 登录
 router.post('/login', async (ctx, next)=>{
-	const {
-		request: {
-			body,
-		}
-	} = ctx;
+	const { body, } = ctx.request;
 
 	// 校验请求提交的数据
 	if(!utils.validateSchema({
@@ -88,24 +79,36 @@ router.post('/login', async (ctx, next)=>{
 	// 校验验证码
 	const sessionCaptcha = ctx.session[`captcha_${ captcha_type }`];
 	if(sessionCaptcha != captcha){
-		// 清除session中的登录验证码，必须重新调验证码重新获取
-		ctx.session[`captcha_${ captcha_type }`] = '';
+		const svgData = _initCaptcha(ctx, captcha_type);
+
 		console.error(`验证码不通过，server：${ sessionCaptcha }，client：${ captcha }`);
-		return ctx.$fail(CODE_STRATEGY.CAPTCHA_MISMATCHING);
+		return ctx.$fail(CODE_STRATEGY.CAPTCHA_MISMATCHING, svgData);
 	}
 
 	const ret = await userService.login(username, password);
 
 	if(ret){
-		ctx.$success({
-			ret
-		});
+		ctx.$success(ret);
 	}else{
+		const svgData = _initCaptcha(ctx, captcha_type);
+
 		// 账号密码查不到
-		ctx.$fail(CODE_STRATEGY.LOGIN_DATA_INVALID);
+		ctx.$fail(CODE_STRATEGY.LOGIN_DATA_INVALID, svgData);
 	}
 
 	await next();
+});
+
+router.get('/', async (ctx, next)=>{
+	// 返回svg路径
+	ctx.$success({
+		data: [
+			{
+				a:1,
+				b:22,
+			}
+		]
+	});
 });
 
 module.exports = router;
