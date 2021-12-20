@@ -2,7 +2,7 @@
  * @Author: zzh0211@live.com
  * @Date: 2020-01-19 15:43:36
  * @Last Modified by: zhangjianzhong
- * @Last Modified time: 2021-12-10 15:09:19
+ * @Last Modified time: 2021-12-20 16:41:35
  */
 const { common_validate_options } = require('../config/joi.js');
 const svgCaptcha = require('svg-captcha');
@@ -67,7 +67,7 @@ function getLocalIPAddress() {
 }
 
 /**获取当前时间的格式化字符串 */
-function getNowStr(format='YYYY-MM-DD HH:mm:ss:SSS'){
+function getNowStr(format='YYYY-MM-DD HH:mm:ss'){
 	return moment().format(format);
 }
 
