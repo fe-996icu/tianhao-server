@@ -1,8 +1,8 @@
 /*用户模块相关的controller
  * @Author: zzh0211@live.com
  * @Date: 2020-01-08 20:41:33
- * @Last Modified by: zzh0211@live.com
- * @Last Modified time: 2020-01-19 15:59:10
+ * @Last Modified by: zhangjianzhong
+ * @Last Modified time: 2021-12-10 16:32:01
  */
 
 const Router = require('koa-router');
@@ -28,11 +28,7 @@ function _initCaptcha(context, captchaType){
 
 // 获取验证码
 router.get('/ge_get_captcha', async (ctx, next)=>{
-	const {
-		request: {
-			query,
-		}
-	} = ctx;
+	const { query } = ctx.request;
 
 	// 校验请求提交的数据
 	if(!utils.validateSchema({
@@ -102,7 +98,7 @@ router.post('/login', async (ctx, next)=>{
 router.get('/', async (ctx, next)=>{
 	// 返回svg路径
 	ctx.$success({
-		data: [
+		list: [
 			{
 				a:1,
 				b:22,

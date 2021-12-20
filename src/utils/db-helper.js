@@ -1,8 +1,8 @@
 /*数据库工具类
  * @Author: zzh0211@live.com
  * @Date: 2020-01-06 15:55:24
- * @Last Modified by:   zzh0211@live.com
- * @Last Modified time: 2020-01-06 15:55:24
+ * @Last Modified by: zhangjianzhong
+ * @Last Modified time: 2021-12-10 14:45:58
  */
 const mongoose = require('mongoose');
 const DB_CONFIG = require('../config/db.js');
@@ -10,7 +10,7 @@ const { MODEL_DELETE_FLAG_FIELD_NAME } = require('../config/model.js');
 const models = require('../models/index.js');
 
 // 连接字符串
-const CONNECT_URL = `mongodb://${ DB_CONFIG.user }:${ DB_CONFIG.pwd }@${ DB_CONFIG.host }:${ DB_CONFIG.port }/${ DB_CONFIG.dbName }`;
+const CONNECT_URL = `mongodb://${ DB_CONFIG.user }:${ DB_CONFIG.pwd }@${ DB_CONFIG.host }:${ DB_CONFIG.port }/${ DB_CONFIG.dbName }?authSource=admin`;
 // 数据库连接配置
 const connectConfig = {
 	useUnifiedTopology: true,

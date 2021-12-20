@@ -1,11 +1,13 @@
 /*工具类
  * @Author: zzh0211@live.com
  * @Date: 2020-01-19 15:43:36
- * @Last Modified by: zzh0211@live.com
- * @Last Modified time: 2020-01-19 15:45:43
+ * @Last Modified by: zhangjianzhong
+ * @Last Modified time: 2021-12-10 15:09:19
  */
 const { common_validate_options } = require('../config/joi.js');
 const svgCaptcha = require('svg-captcha');
+const os = require('os');
+const moment = require('moment');
 
 /**
  * 验证joi校验模式
@@ -17,7 +19,7 @@ function validateSchema({ schema, data, context }){
 	const { error } = schema.validate(data, common_validate_options);
 	if(error){
 		const { message, details, } = error;
-		console.error(`校验不通过： ${ details[0].type }【${ message }】`);
+		console.error(`校验不通过： ${ details[0].type }【${ message }】 url: ${ context.url }`);
 		context.$fail(message);
 		return false;
 	}else{
@@ -48,7 +50,30 @@ function getCaptcha(){
 	};
 }
 
+/**获取本机ip地址 */
+function getLocalIPAddress() {
+    const interfaces = os.networkInterfaces();
+
+    for (const devName in interfaces) {
+        const iface = interfaces[devName];
+
+        for (let i = 0; i < iface.length; i++) {
+            const alias = iface[i];
+            if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
+                return alias.address;
+            }
+        }
+    }
+}
+
+/**获取当前时间的格式化字符串 */
+function getNowStr(format='YYYY-MM-DD HH:mm:ss:SSS'){
+	return moment().format(format);
+}
+
 module.exports = {
 	validateSchema,
 	getCaptcha,
+	getLocalIPAddress,
+	getNowStr,
 };
